@@ -7,37 +7,79 @@
 
 import SwiftUI
 import RealityKit
+import PhotosUI
 
 struct ContentView : View {
+    @State var selectedItems: [PhotosPickerItem] = []
+    @State var selectedPhotosData: [Data] = []
+
     var body: some View {
-        ARViewContainer().edgesIgnoringSafeArea(.all)
+        ZStack(alignment: .bottom) {
+            ARViewContainer().edgesIgnoringSafeArea(.all)
+            HStack {
+                PhotosPicker(
+                    selection: $selectedItems,
+                    matching: .images
+                ) {
+                    NavBarIcon(image: Image(systemName: "photo.fill"))
+                }
+                .onChange(of: selectedItems) { newItems in
+                    selectedPhotosData.removeAll()
+                    for newItem in newItems {
+                        print("LOADING IMAGE")
+                        Task {
+                            if let data = try? await newItem.loadTransferable(type: Data.self) {
+                                selectedPhotosData.append(data)
+                            }
+                        }
+                    }
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(selectedPhotosData, id: \.self) { photoData in
+                            if let image = UIImage(data: photoData) {
+                                NavBarIcon(image: Image(uiImage: image))
+                            }
+                        }
+                    }
+
+                }
+            }
+            .padding(20)
+        }
+    }
+}
+
+struct NavBarIcon: View {
+    var image: Image
+
+    var body: some View {
+        image.resizable()
+            .scaledToFit()
+            .frame(height: 40)
     }
 }
 
 struct ARViewContainer: UIViewRepresentable {
-    
+
     func makeUIView(context: Context) -> ARView {
-        
+
         let arView = ARView(frame: .zero)
-        
-        // Load the "Box" scene from the "Experience" Reality File
-        let boxAnchor = try! Experience.loadBox()
-        
-        // Add the box anchor to the scene
-        arView.scene.anchors.append(boxAnchor)
-        
         return arView
-        
+
     }
-    
-    func updateUIView(_ uiView: ARView, context: Context) {}
-    
+
+    func updateUIView(_ uiView: ARView, context: Context) {
+
+
+    }
+
 }
 
-#if DEBUG
-struct ContentView_Previews : PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-#endif
+//#if DEBUG
+//struct ContentView_Previews : PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
+//#endif
