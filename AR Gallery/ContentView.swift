@@ -39,7 +39,7 @@ struct NavBarConfirmImagePlacement: View {
             }
             Spacer()
             Button(action: {
-                //confirmedImageForPlacement = selectedImageForPlacement
+                confirmedImageForPlacement = selectedImageForPlacement
                 selectedImageForPlacement = nil
             }) {
                 NavBarIcon(image: Image(systemName: "checkmark.circle.fill"))
@@ -99,6 +99,7 @@ struct NavBarIcon: View {
             .font(.system(size: 45))
             .foregroundColor(.white)
             .buttonStyle(PlainButtonStyle())
+            .padding(10)
     }
 }
 
