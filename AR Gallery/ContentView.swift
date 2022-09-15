@@ -17,12 +17,14 @@ import FocusEntity
 struct ContentView : View {
     @State private var selectedImageForPlacement: ModelEntity?
     @State private var confirmedImageForPlacement: ModelEntity?
+    
+    @State private var selectedPhotosData: [Data]?
 
     var body: some View {
         ZStack(alignment: .bottom) {
             ARViewContainer(confirmedImageForPlacement: $confirmedImageForPlacement).edgesIgnoringSafeArea(.all)
             if (selectedImageForPlacement == nil) {
-                NavBarPhotos(selectedImageForPlacement: $selectedImageForPlacement)
+                NavBarPhotos(selectedPhotosData: $selectedPhotosData, selectedImageForPlacement: $selectedImageForPlacement)
             } else {
                 NavBarConfirmImagePlacement(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement)
             }
@@ -56,7 +58,7 @@ struct NavBarConfirmImagePlacement: View {
 
 struct NavBarPhotos: View {
     @State private var selectedItems: [PhotosPickerItem] = []
-    @State private var selectedPhotosData: [Data] = []
+    @Binding var selectedPhotosData: [Data]?
     
     @Binding var selectedImageForPlacement: ModelEntity?
     
@@ -69,19 +71,19 @@ struct NavBarPhotos: View {
                 NavBarIcon(image: Image(systemName: "photo.fill"))
             }
             .onChange(of: selectedItems) { newItems in
-                selectedPhotosData.removeAll()
+                selectedPhotosData = []
                 for newItem in newItems {
                     print("LOADING IMAGE")
                     Task {
                         if let data = try? await newItem.loadTransferable(type: Data.self) {
-                            selectedPhotosData.append(data)
+                            selectedPhotosData!.append(data)
                         }
                     }
                 }
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    ForEach(selectedPhotosData, id: \.self) { photoData in
+                    ForEach(selectedPhotosData ?? [], id: \.self) { photoData in
                         if let image = UIImage(data: photoData) {
                             NavBarPictureButton(image: image, selectedImageForPlacement: $selectedImageForPlacement)
                         }
