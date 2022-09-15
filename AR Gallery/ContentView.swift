@@ -141,6 +141,12 @@ struct NavBarPictureButton: View {
             let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
             selectedImageForPlacement = ModelEntity(mesh: mesh, materials: [material])
             
+            if (image.imageOrientation == .right) {
+                print("INSIDE")
+                selectedImageForPlacement!.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
+            }
+            
+            
         }, label: {
             NavBarIcon(image: Image(uiImage: image))
         })
