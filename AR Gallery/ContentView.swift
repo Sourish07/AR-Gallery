@@ -23,7 +23,7 @@ struct ContentView : View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            ARViewContainer(confirmedImageForPlacement: $confirmedImageForPlacement).edgesIgnoringSafeArea(.all)
+            ARViewContainer(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement).edgesIgnoringSafeArea(.all)
             if (selectedImageForPlacement == nil) {
                 NavBarPhotos(selectedItems: $selectedItems, selectedPhotosData: $selectedPhotosData, selectedImageForPlacement: $selectedImageForPlacement)
             } else {
@@ -143,7 +143,6 @@ struct NavBarPictureButton: View {
             selectedImageForPlacement = ModelEntity(mesh: mesh, materials: [material])
             
             if (image.imageOrientation == .right) {
-                print("INSIDE")
                 selectedImageForPlacement!.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
             }
             
@@ -155,16 +154,19 @@ struct NavBarPictureButton: View {
 }
 
 struct ARViewContainer: UIViewRepresentable {
+    @Binding var selectedImageForPlacement: ModelEntity?
     @Binding var confirmedImageForPlacement: ModelEntity?
     
-    func makeUIView(context: Context) -> ARView {
+    func makeUIView(context: Context) -> CustomARView {
 
         let arView = CustomARView(frame: .zero)
+        //arView.debugOptions.insert(.showStatistics)
         return arView
 
     }
 
-    func updateUIView(_ uiView: ARView, context: Context) {
+    func updateUIView(_ uiView: CustomARView, context: Context) {
+        uiView.focusEntity?.isEnabled = self.selectedImageForPlacement != nil
         if let modelEntity = confirmedImageForPlacement {
             
             let anchorEntity = AnchorEntity(plane: .any)
