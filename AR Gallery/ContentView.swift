@@ -18,13 +18,14 @@ struct ContentView : View {
     @State private var selectedImageForPlacement: ModelEntity?
     @State private var confirmedImageForPlacement: ModelEntity?
     
+    @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedPhotosData: [Data]?
 
     var body: some View {
         ZStack(alignment: .bottom) {
             ARViewContainer(confirmedImageForPlacement: $confirmedImageForPlacement).edgesIgnoringSafeArea(.all)
             if (selectedImageForPlacement == nil) {
-                NavBarPhotos(selectedPhotosData: $selectedPhotosData, selectedImageForPlacement: $selectedImageForPlacement)
+                NavBarPhotos(selectedItems: $selectedItems, selectedPhotosData: $selectedPhotosData, selectedImageForPlacement: $selectedImageForPlacement)
             } else {
                 NavBarConfirmImagePlacement(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement)
             }
@@ -57,7 +58,7 @@ struct NavBarConfirmImagePlacement: View {
 }
 
 struct NavBarPhotos: View {
-    @State private var selectedItems: [PhotosPickerItem] = []
+    @Binding var selectedItems: [PhotosPickerItem]
     @Binding var selectedPhotosData: [Data]?
     
     @Binding var selectedImageForPlacement: ModelEntity?
