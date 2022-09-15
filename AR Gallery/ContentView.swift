@@ -10,13 +10,41 @@ import RealityKit
 import PhotosUI
 
 struct ContentView : View {
-    
     @State private var selectedImageForPlacement: ModelEntity?
+    @State private var confirmedImageForPlacement: ModelEntity?
 
     var body: some View {
         ZStack(alignment: .bottom) {
             ARViewContainer().edgesIgnoringSafeArea(.all)
-            NavBarPhotos(selectedImageForPlacement: $selectedImageForPlacement)
+            if (selectedImageForPlacement == nil) {
+                NavBarPhotos(selectedImageForPlacement: $selectedImageForPlacement)
+            } else {
+                NavBarConfirmImagePlacement(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement)
+            }
+        }
+    }
+}
+
+struct NavBarConfirmImagePlacement: View {
+    @Binding var selectedImageForPlacement: ModelEntity?
+    @Binding var confirmedImageForPlacement: ModelEntity?
+    
+    var body: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                selectedImageForPlacement = nil
+            }) {
+                NavBarIcon(image: Image(systemName: "xmark.circle.fill"))
+            }
+            Spacer()
+            Button(action: {
+                //confirmedImageForPlacement = selectedImageForPlacement
+                selectedImageForPlacement = nil
+            }) {
+                NavBarIcon(image: Image(systemName: "checkmark.circle.fill"))
+            }
+            Spacer()
         }
     }
 }
@@ -64,9 +92,13 @@ struct NavBarIcon: View {
     var image: Image
     
     var body: some View {
-        image.resizable()
+        image
+            .resizable()
             .scaledToFit()
             .frame(height: 40)
+            .font(.system(size: 45))
+            .foregroundColor(.white)
+            .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -77,10 +109,11 @@ struct NavBarPictureButton: View {
     
     var body: some View {
         Button(action: {
+            print("NAV BAR PICTURE TAPPED")
             let cgImage = image.cgImage
             let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
             let imgTexture = MaterialParameters.Texture.init(textureResource)
-            
+
             let longerLength: Float = 0.5
             var planeHeight: Float? = nil
             var planeWidth: Float? = nil
@@ -91,12 +124,12 @@ struct NavBarPictureButton: View {
                 planeWidth = longerLength
                 planeHeight = Float(imgTexture.resource.height) / (Float(imgTexture.resource.width) / longerLength)
             }
-            
+
             var material = SimpleMaterial()
             material.color = .init(tint: .white, texture: imgTexture)
             material.roughness = 1
             material.metallic = 1
-            
+
             let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
             selectedImageForPlacement = ModelEntity(mesh: mesh, materials: [material])
             
