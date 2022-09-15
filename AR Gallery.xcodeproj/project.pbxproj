@@ -13,6 +13,8 @@
 		6EB1E86328D2718600F8B568 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6EB1E86228D2718600F8B568 /* Assets.xcassets */; };
 		6EB1E86628D2718600F8B568 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6EB1E86528D2718600F8B568 /* Preview Assets.xcassets */; };
 		6EBAEEA328D2B8A1006ED212 /* FocusEntity in Frameworks */ = {isa = PBXBuildFile; productRef = 6EBAEEA228D2B8A1006ED212 /* FocusEntity */; };
+		6EBAEEA528D3E8BF006ED212 /* ARViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EBAEEA428D3E8BF006ED212 /* ARViewContainer.swift */; };
+		6EBAEEA728D3E932006ED212 /* NavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EBAEEA628D3E932006ED212 /* NavBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		6EB1E86028D2718600F8B568 /* Experience.rcproject */ = {isa = PBXFileReference; lastKnownFileType = file.rcproject; path = Experience.rcproject; sourceTree = "<group>"; };
 		6EB1E86228D2718600F8B568 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6EB1E86528D2718600F8B568 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		6EBAEEA428D3E8BF006ED212 /* ARViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewContainer.swift; sourceTree = "<group>"; };
+		6EBAEEA628D3E932006ED212 /* NavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,10 +60,12 @@
 			isa = PBXGroup;
 			children = (
 				6EB1E85C28D2718600F8B568 /* AppDelegate.swift */,
+				6EBAEEA428D3E8BF006ED212 /* ARViewContainer.swift */,
 				6EB1E85E28D2718600F8B568 /* ContentView.swift */,
 				6EB1E86028D2718600F8B568 /* Experience.rcproject */,
 				6EB1E86228D2718600F8B568 /* Assets.xcassets */,
 				6EB1E86428D2718600F8B568 /* Preview Content */,
+				6EBAEEA628D3E932006ED212 /* NavBar.swift */,
 			);
 			path = "AR Gallery";
 			sourceTree = "<group>";
@@ -148,8 +154,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6EBAEEA728D3E932006ED212 /* NavBar.swift in Sources */,
 				6EB1E85F28D2718600F8B568 /* ContentView.swift in Sources */,
 				6EB1E85D28D2718600F8B568 /* AppDelegate.swift in Sources */,
+				6EBAEEA528D3E8BF006ED212 /* ARViewContainer.swift in Sources */,
 				6EB1E86128D2718600F8B568 /* Experience.rcproject in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
