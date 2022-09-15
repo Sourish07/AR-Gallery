@@ -6,8 +6,13 @@
 //
 
 import SwiftUI
-import RealityKit
 import PhotosUI
+
+import RealityKit
+import ARKit
+
+import FocusEntity
+
 
 struct ContentView : View {
     @State private var selectedImageForPlacement: ModelEntity?
@@ -15,7 +20,7 @@ struct ContentView : View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            ARViewContainer().edgesIgnoringSafeArea(.all)
+            ARViewContainer(confirmedImageForPlacement: $confirmedImageForPlacement).edgesIgnoringSafeArea(.all)
             if (selectedImageForPlacement == nil) {
                 NavBarPhotos(selectedImageForPlacement: $selectedImageForPlacement)
             } else {
@@ -141,19 +146,56 @@ struct NavBarPictureButton: View {
 }
 
 struct ARViewContainer: UIViewRepresentable {
-
+    @Binding var confirmedImageForPlacement: ModelEntity?
+    
     func makeUIView(context: Context) -> ARView {
 
-        let arView = ARView(frame: .zero)
+        let arView = CustomARView(frame: .zero)
         return arView
 
     }
 
     func updateUIView(_ uiView: ARView, context: Context) {
-
-
+        if let modelEntity = confirmedImageForPlacement {
+            
+            let anchorEntity = AnchorEntity(plane: .any)
+            anchorEntity.addChild(modelEntity.clone(recursive: true))
+            
+            uiView.scene.addAnchor(anchorEntity)
+            
+            DispatchQueue.main.async {
+                self.confirmedImageForPlacement = nil
+            }
+        }
     }
+}
 
+class CustomARView: ARView {
+    var focusEntity: FocusEntity?
+    
+    required init(frame frameRect: CGRect) {
+        super.init(frame: frameRect)
+        
+        focusEntity = FocusEntity(on: self, focus: .classic)
+        
+        self.setupARView()
+    }
+    
+    @MainActor @objc required dynamic init?(coder decoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupARView() {
+        let config = ARWorldTrackingConfiguration()
+        config.planeDetection = [.horizontal, .vertical]
+        config.environmentTexturing = .automatic
+        
+        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+            config.sceneReconstruction = .mesh
+        }
+        
+        self.session.run(config)
+    }
 }
 
 //#if DEBUG
