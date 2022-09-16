@@ -52,14 +52,15 @@ struct ARViewContainer: UIViewRepresentable {
             let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
             let modelEntity = ModelEntity(mesh: mesh, materials: [material])
             
-            if (uiImage.imageOrientation == .right) {
-                modelEntity.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
-            }
-            
+//            if (uiImage.imageOrientation == .right) {
+//                modelEntity.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
+//            }
             
             let anchorEntity = AnchorEntity(plane: .any)
             //anchorEntity.addChild(modelEntity.clone(recursive: true))
-            anchorEntity.addChild((frameModel.modelEntity!.clone(recursive: true)))
+            let clonedFrameModel = frameModel.modelEntity!.clone(recursive: true)
+            clonedFrameModel.model?.materials[1] = material
+            anchorEntity.addChild(clonedFrameModel)
             
             uiView.scene.addAnchor(anchorEntity)
             
