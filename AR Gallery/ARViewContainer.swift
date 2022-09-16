@@ -10,24 +10,56 @@ import RealityKit
 import ARKit
 import FocusEntity
 
+import Combine
+
 struct ARViewContainer: UIViewRepresentable {
-    @Binding var selectedImageForPlacement: ModelEntity?
-    @Binding var confirmedImageForPlacement: ModelEntity?
+    @Binding var selectedImageForPlacement: UIImage?
+    @Binding var confirmedImageForPlacement: UIImage?
+    
+    var frameModel: FrameModel = FrameModel(modelName: "frame")
     
     func makeUIView(context: Context) -> CustomARView {
 
         let arView = CustomARView(frame: .zero)
-        //arView.debugOptions.insert(.showStatistics)
         return arView
 
     }
 
     func updateUIView(_ uiView: CustomARView, context: Context) {
         uiView.focusEntity?.isEnabled = self.selectedImageForPlacement != nil
-        if let modelEntity = confirmedImageForPlacement {
+        if let uiImage = confirmedImageForPlacement {
+            
+            let cgImage = uiImage.cgImage
+            let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
+            let imgTexture = MaterialParameters.Texture.init(textureResource)
+
+            let longerLength: Float = 0.5
+            var planeHeight: Float? = nil
+            var planeWidth: Float? = nil
+            if imgTexture.resource.height > imgTexture.resource.width {
+                planeHeight = longerLength
+                planeWidth = Float(imgTexture.resource.width) / (Float(imgTexture.resource.height) / longerLength)
+            } else {
+                planeWidth = longerLength
+                planeHeight = Float(imgTexture.resource.height) / (Float(imgTexture.resource.width) / longerLength)
+            }
+
+            var material = SimpleMaterial()
+            material.color = .init(tint: .white, texture: imgTexture)
+            material.roughness = 1
+            material.metallic = 1
+
+            let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
+            let modelEntity = ModelEntity(mesh: mesh, materials: [material])
+            
+            if (uiImage.imageOrientation == .right) {
+                modelEntity.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
+            }
+            
             
             let anchorEntity = AnchorEntity(plane: .any)
-            anchorEntity.addChild(modelEntity.clone(recursive: true))
+            //anchorEntity.addChild(modelEntity.clone(recursive: true))
+            anchorEntity.addChild((frameModel.modelEntity!.clone(recursive: true)))
             
             uiView.scene.addAnchor(anchorEntity)
             
@@ -57,7 +89,7 @@ class CustomARView: ARView {
     
     func setupARView() {
         let config = ARWorldTrackingConfiguration()
-        config.planeDetection = [.horizontal]
+        config.planeDetection = [.vertical, .horizontal]
         config.environmentTexturing = .automatic
         
         if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {

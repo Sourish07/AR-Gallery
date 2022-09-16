@@ -10,8 +10,8 @@ import RealityKit
 import PhotosUI
 
 struct NavBar: View {
-    @Binding var selectedImageForPlacement: ModelEntity?
-    @Binding var confirmedImageForPlacement: ModelEntity?
+    @Binding var selectedImageForPlacement: UIImage?
+    @Binding var confirmedImageForPlacement: UIImage?
     
     @Binding var selectedItems: [PhotosPickerItem]
     @Binding var selectedPhotosData: [Data]?
@@ -26,8 +26,8 @@ struct NavBar: View {
 }
 
 struct NavBarConfirmImagePlacement: View {
-    @Binding var selectedImageForPlacement: ModelEntity?
-    @Binding var confirmedImageForPlacement: ModelEntity?
+    @Binding var selectedImageForPlacement: UIImage?
+    @Binding var confirmedImageForPlacement: UIImage?
     
     var body: some View {
         HStack {
@@ -53,7 +53,7 @@ struct NavBarPhotos: View {
     @Binding var selectedItems: [PhotosPickerItem]
     @Binding var selectedPhotosData: [Data]?
     
-    @Binding var selectedImageForPlacement: ModelEntity?
+    @Binding var selectedImageForPlacement: UIImage?
     
     var body: some View {
         HStack {
@@ -76,6 +76,10 @@ struct NavBarPhotos: View {
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
+                    if (selectedPhotosData == nil) {
+                        Image(systemName: "arrow.left")
+                        Text("Add some pictures from your camera roll to put on your wall!")
+                    }
                     ForEach(selectedPhotosData ?? [], id: \.self) { photoData in
                         if let image = UIImage(data: photoData) {
                             NavBarPictureButton(image: image, selectedImageForPlacement: $selectedImageForPlacement)
@@ -106,37 +110,38 @@ struct NavBarIcon: View {
 struct NavBarPictureButton: View {
     var image: UIImage
     
-    @Binding var selectedImageForPlacement: ModelEntity?
+    @Binding var selectedImageForPlacement: UIImage?
     
     var body: some View {
         Button(action: {
+            selectedImageForPlacement = image
             print("NAV BAR PICTURE TAPPED")
-            let cgImage = image.cgImage
-            let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
-            let imgTexture = MaterialParameters.Texture.init(textureResource)
-
-            let longerLength: Float = 0.5
-            var planeHeight: Float? = nil
-            var planeWidth: Float? = nil
-            if imgTexture.resource.height > imgTexture.resource.width {
-                planeHeight = longerLength
-                planeWidth = Float(imgTexture.resource.width) / (Float(imgTexture.resource.height) / longerLength)
-            } else {
-                planeWidth = longerLength
-                planeHeight = Float(imgTexture.resource.height) / (Float(imgTexture.resource.width) / longerLength)
-            }
-
-            var material = SimpleMaterial()
-            material.color = .init(tint: .white, texture: imgTexture)
-            material.roughness = 1
-            material.metallic = 1
-
-            let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
-            selectedImageForPlacement = ModelEntity(mesh: mesh, materials: [material])
-            
-            if (image.imageOrientation == .right) {
-                selectedImageForPlacement!.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
-            }
+//            let cgImage = image.cgImage
+//            let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
+//            let imgTexture = MaterialParameters.Texture.init(textureResource)
+//
+//            let longerLength: Float = 0.5
+//            var planeHeight: Float? = nil
+//            var planeWidth: Float? = nil
+//            if imgTexture.resource.height > imgTexture.resource.width {
+//                planeHeight = longerLength
+//                planeWidth = Float(imgTexture.resource.width) / (Float(imgTexture.resource.height) / longerLength)
+//            } else {
+//                planeWidth = longerLength
+//                planeHeight = Float(imgTexture.resource.height) / (Float(imgTexture.resource.width) / longerLength)
+//            }
+//
+//            var material = SimpleMaterial()
+//            material.color = .init(tint: .white, texture: imgTexture)
+//            material.roughness = 1
+//            material.metallic = 1
+//
+//            let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
+//            selectedImageForPlacement = ModelEntity(mesh: mesh, materials: [material])
+//
+//            if (image.imageOrientation == .right) {
+//                selectedImageForPlacement!.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
+//            }
             
             
         }, label: {

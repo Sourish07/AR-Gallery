@@ -12,8 +12,8 @@ import RealityKit
 
 
 struct ContentView : View {
-    @State private var selectedImageForPlacement: ModelEntity?
-    @State private var confirmedImageForPlacement: ModelEntity?
+    @State private var selectedImageForPlacement: UIImage?
+    @State private var confirmedImageForPlacement: UIImage?
     
     @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedPhotosData: [Data]?
