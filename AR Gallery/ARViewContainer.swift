@@ -33,35 +33,49 @@ struct ARViewContainer: UIViewRepresentable {
             let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
             let imgTexture = MaterialParameters.Texture.init(textureResource)
 
-            let longerLength: Float = 0.5
-            var planeHeight: Float? = nil
-            var planeWidth: Float? = nil
-            if imgTexture.resource.height > imgTexture.resource.width {
-                planeHeight = longerLength
-                planeWidth = Float(imgTexture.resource.width) / (Float(imgTexture.resource.height) / longerLength)
-            } else {
-                planeWidth = longerLength
-                planeHeight = Float(imgTexture.resource.height) / (Float(imgTexture.resource.width) / longerLength)
-            }
-
-            var material = SimpleMaterial()
-            material.color = .init(tint: .white, texture: imgTexture)
-            material.roughness = 1
-            material.metallic = 1
-
-            let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
-            let modelEntity = ModelEntity(mesh: mesh, materials: [material])
-            
-//            if (uiImage.imageOrientation == .right) {
-//                modelEntity.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
-//            }
+            var simpleMaterial = SimpleMaterial()
+            simpleMaterial.color = .init(tint: .white, texture: imgTexture)
+            simpleMaterial.roughness = 1
+            simpleMaterial.metallic = 1
             
             let anchorEntity = AnchorEntity(plane: .any)
-            //anchorEntity.addChild(modelEntity.clone(recursive: true))
             let clonedFrameModel = frameModel.modelEntity!.clone(recursive: true)
-            clonedFrameModel.model?.materials[1] = material
-            anchorEntity.addChild(clonedFrameModel)
+            clonedFrameModel.model?.materials[1] = simpleMaterial
             
+            let imgHeight = Float(imgTexture.resource.height)
+            let imgWidth = Float(imgTexture.resource.width)
+            
+            var scaleTransform: Transform
+            if (abs((imgHeight / imgWidth) - (4.0 / 3.0)) < 1e-8) {
+                print("DEBUG: Input image is 4/3 aspect ratio")
+            }
+            
+            let toMul = (4.0 / 3.0) / (imgHeight / imgWidth)
+            scaleTransform = Transform(scale: simd_float3(x: toMul, y: 1, z: 1))
+            
+//            if imgHeight == imgWidth {
+//                scaleTransform = Transform(scale: simd_float3(x: 4/3, y: 1, z: 1))
+//            }
+//            if imgTexture.resource.height > imgTexture.resource.width {
+//                let toMul = (4.0 / 3.0) / (imgHeight / imgWidth)
+//                scaleTransform = Transform(scale: simd_float3(x: toMul, y: 1, z: 1))
+//            } else {
+//                let toMul = (4.0 / 3.0) / (imgHeight / imgWidth)
+//                scaleTransform = Transform(scale: simd_float3(x: toMul, y: 1, z: 1))
+//            }
+            
+            clonedFrameModel.transform = scaleTransform
+            
+            if (uiImage.imageOrientation == .right) {
+                print("DEBUG: Rotating model")
+                clonedFrameModel.transform.rotation = Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
+            }
+            
+            // Enabling translation and rotation gestures
+            clonedFrameModel.generateCollisionShapes(recursive: true)
+            uiView.installGestures([.all], for: clonedFrameModel)
+            
+            anchorEntity.addChild(clonedFrameModel)
             uiView.scene.addAnchor(anchorEntity)
             
             DispatchQueue.main.async {
@@ -74,7 +88,7 @@ struct ARViewContainer: UIViewRepresentable {
 class CustomARView: ARView {
     var focusEntity: FocusEntity?
     
-    let coachingOverlay = ARCoachingOverlayView()
+    //let coachingOverlay = ARCoachingOverlayView()
     
     required init(frame frameRect: CGRect) {
         super.init(frame: frameRect)
