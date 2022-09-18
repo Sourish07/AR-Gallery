@@ -25,31 +25,7 @@ struct NavBar: View {
     }
 }
 
-struct NavBarConfirmImagePlacement: View {
-    @Binding var selectedImageForPlacement: UIImage?
-    @Binding var confirmedImageForPlacement: UIImage?
-    
-    var body: some View {
-        HStack {
-            Spacer()
-            Button(action: {
-                selectedImageForPlacement = nil
-            }) {
-                NavBarIcon(image: Image(systemName: "xmark.circle.fill"))
-            }
-            Spacer()
-            Button(action: {
-                confirmedImageForPlacement = selectedImageForPlacement
-                selectedImageForPlacement = nil
-            }) {
-                NavBarIcon(image: Image(systemName: "checkmark.circle.fill"))
-            }
-            Spacer()
-        }
-    }
-}
-
-struct NavBarPhotos: View {
+struct NavBarPhotos: View { // The row of chosen images at the bottom of the user's screen
     @Binding var selectedItems: [PhotosPickerItem]
     @Binding var selectedPhotosData: [Data]?
     
@@ -66,7 +42,6 @@ struct NavBarPhotos: View {
             .onChange(of: selectedItems) { newItems in
                 selectedPhotosData = []
                 for newItem in newItems {
-                    print("LOADING IMAGE")
                     Task {
                         if let data = try? await newItem.loadTransferable(type: Data.self) {
                             selectedPhotosData!.append(data)
@@ -92,7 +67,45 @@ struct NavBarPhotos: View {
     }
 }
 
-struct NavBarIcon: View {
+struct NavBarConfirmImagePlacement: View { // Buttons when confirming or cancelling image placement; Appears after an image has been chosen
+    @Binding var selectedImageForPlacement: UIImage?
+    @Binding var confirmedImageForPlacement: UIImage?
+    
+    var body: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                selectedImageForPlacement = nil
+            }) {
+                NavBarIcon(image: Image(systemName: "xmark.circle.fill"))
+            }
+            Spacer()
+            Button(action: {
+                confirmedImageForPlacement = selectedImageForPlacement
+                selectedImageForPlacement = nil
+            }) {
+                NavBarIcon(image: Image(systemName: "checkmark.circle.fill"))
+            }
+            Spacer()
+        }
+    }
+}
+
+struct NavBarPictureButton: View { // Buttons for the nav bar that have the picture as its icon and sets the tapped picture as the selected picture for placement
+    var image: UIImage
+    
+    @Binding var selectedImageForPlacement: UIImage?
+    
+    var body: some View {
+        Button(action: {
+            selectedImageForPlacement = image
+        }, label: {
+            NavBarIcon(image: Image(uiImage: image))
+        })
+    }
+}
+
+struct NavBarIcon: View { // Icon formatting for all of the nav bar icons
     var image: Image
     
     var body: some View {
@@ -104,48 +117,5 @@ struct NavBarIcon: View {
             .foregroundColor(.white)
             .buttonStyle(PlainButtonStyle())
             .padding(10)
-    }
-}
-
-struct NavBarPictureButton: View {
-    var image: UIImage
-    
-    @Binding var selectedImageForPlacement: UIImage?
-    
-    var body: some View {
-        Button(action: {
-            selectedImageForPlacement = image
-            print("NAV BAR PICTURE TAPPED")
-//            let cgImage = image.cgImage
-//            let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
-//            let imgTexture = MaterialParameters.Texture.init(textureResource)
-//
-//            let longerLength: Float = 0.5
-//            var planeHeight: Float? = nil
-//            var planeWidth: Float? = nil
-//            if imgTexture.resource.height > imgTexture.resource.width {
-//                planeHeight = longerLength
-//                planeWidth = Float(imgTexture.resource.width) / (Float(imgTexture.resource.height) / longerLength)
-//            } else {
-//                planeWidth = longerLength
-//                planeHeight = Float(imgTexture.resource.height) / (Float(imgTexture.resource.width) / longerLength)
-//            }
-//
-//            var material = SimpleMaterial()
-//            material.color = .init(tint: .white, texture: imgTexture)
-//            material.roughness = 1
-//            material.metallic = 1
-//
-//            let mesh = MeshResource.generatePlane(width: planeWidth!, depth: planeHeight!)
-//            selectedImageForPlacement = ModelEntity(mesh: mesh, materials: [material])
-//
-//            if (image.imageOrientation == .right) {
-//                selectedImageForPlacement!.transform = Transform(pitch: 0, yaw: -.pi/2, roll: 0)
-//            }
-            
-            
-        }, label: {
-            NavBarIcon(image: Image(uiImage: image))
-        })
     }
 }

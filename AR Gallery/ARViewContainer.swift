@@ -16,7 +16,7 @@ struct ARViewContainer: UIViewRepresentable {
     @Binding var selectedImageForPlacement: UIImage?
     @Binding var confirmedImageForPlacement: UIImage?
     
-    var frameModels: [FrameModel] = FrameModel.initFrames()//FrameModel(modelName: "frame")
+    var frameModels: [FrameModel] = FrameModel.initFrames()
     @State var frameModelCounter: Counter = Counter(upperBound: 5)
     
     func makeUIView(context: Context) -> CustomARView {
@@ -46,17 +46,19 @@ struct ARViewContainer: UIViewRepresentable {
             
             // Picture is landscape
             if (imgHeight < imgWidth) {
-                let rotationRadians = Float(90.0) * .pi / 180
-                material.textureCoordinateTransform = .init(rotation: rotationRadians)
+                material.textureCoordinateTransform = .init(rotation: .pi / 2)
                 clonedFrameModel.transform.rotation *= Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
             }
             
+            // Updating mesh material to user's chosen picture
             clonedFrameModel.model?.materials[1] = material
             
+            // Calculating scale factor to make frame model match picture's aspect ratio
             let toMul = (4.0 / 3.0) / (max(imgHeight, imgWidth) / min(imgHeight, imgWidth))
             print("Scaling by \(toMul)")
             clonedFrameModel.transform.scale = Transform(scale: simd_float3(x: toMul, y: 1, z: 1)).scale
             
+            // Ensuring the picture is orientated correctly
             if (uiImage.imageOrientation == .right) {
                 clonedFrameModel.transform.rotation *= Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
             }
@@ -65,6 +67,7 @@ struct ARViewContainer: UIViewRepresentable {
             clonedFrameModel.generateCollisionShapes(recursive: true)
             uiView.installGestures([.all], for: clonedFrameModel)
             
+            // Adding to scene
             let anchorEntity = AnchorEntity(plane: .any)
             anchorEntity.addChild(clonedFrameModel)
             uiView.scene.addAnchor(anchorEntity)
