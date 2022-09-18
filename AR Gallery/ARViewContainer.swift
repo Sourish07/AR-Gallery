@@ -28,53 +28,48 @@ struct ARViewContainer: UIViewRepresentable {
     func updateUIView(_ uiView: CustomARView, context: Context) {
         uiView.focusEntity?.isEnabled = self.selectedImageForPlacement != nil
         if let uiImage = confirmedImageForPlacement {
-            
             let cgImage = uiImage.cgImage
             let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
             let imgTexture = MaterialParameters.Texture.init(textureResource)
-
-            var simpleMaterial = SimpleMaterial()
-            simpleMaterial.color = .init(tint: .white, texture: imgTexture)
-            simpleMaterial.roughness = 1
-            simpleMaterial.metallic = 1
-            
-            let anchorEntity = AnchorEntity(plane: .any)
-            let clonedFrameModel = frameModel.modelEntity!.clone(recursive: true)
-            clonedFrameModel.model?.materials[1] = simpleMaterial
             
             let imgHeight = Float(imgTexture.resource.height)
             let imgWidth = Float(imgTexture.resource.width)
             
-            var scaleTransform: Transform
-            if (abs((imgHeight / imgWidth) - (4.0 / 3.0)) < 1e-8) {
-                print("DEBUG: Input image is 4/3 aspect ratio")
+            
+
+            var material = PhysicallyBasedMaterial()
+            material.baseColor = .init(tint: .white, texture: imgTexture)
+            material.roughness = .init(floatLiteral: 1)
+            material.metallic = .init(floatLiteral: 1)
+            
+            let clonedFrameModel: ModelEntity
+            if (imgHeight > imgWidth) {
+                print("Using portrait model")
+                clonedFrameModel = frameModel.modelEntity!.clone(recursive: true)
+            } else {
+                let rotationRadians = Float(90.0) * .pi / 180
+                print("Using landscape model")
+                material.textureCoordinateTransform = .init(rotation: rotationRadians)
+                clonedFrameModel = frameModel.modelEntity!.clone(recursive: true)
+                clonedFrameModel.transform.rotation *= Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
             }
             
-            let toMul = (4.0 / 3.0) / (imgHeight / imgWidth)
-            scaleTransform = Transform(scale: simd_float3(x: toMul, y: 1, z: 1))
+            clonedFrameModel.model?.materials[1] = material
             
-//            if imgHeight == imgWidth {
-//                scaleTransform = Transform(scale: simd_float3(x: 4/3, y: 1, z: 1))
-//            }
-//            if imgTexture.resource.height > imgTexture.resource.width {
-//                let toMul = (4.0 / 3.0) / (imgHeight / imgWidth)
-//                scaleTransform = Transform(scale: simd_float3(x: toMul, y: 1, z: 1))
-//            } else {
-//                let toMul = (4.0 / 3.0) / (imgHeight / imgWidth)
-//                scaleTransform = Transform(scale: simd_float3(x: toMul, y: 1, z: 1))
-//            }
-            
-            clonedFrameModel.transform = scaleTransform
+            var scaleTransform: Transform
+            let toMul = (4.0 / 3.0) / (max(imgHeight, imgWidth) / min(imgHeight, imgWidth))
+            print("Scaling by \(toMul)")
+            clonedFrameModel.transform.scale = Transform(scale: simd_float3(x: toMul, y: 1, z: 1)).scale
             
             if (uiImage.imageOrientation == .right) {
-                print("DEBUG: Rotating model")
-                clonedFrameModel.transform.rotation = Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
+                clonedFrameModel.transform.rotation *= Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
             }
             
             // Enabling translation and rotation gestures
             clonedFrameModel.generateCollisionShapes(recursive: true)
             uiView.installGestures([.all], for: clonedFrameModel)
             
+            let anchorEntity = AnchorEntity(plane: .any)
             anchorEntity.addChild(clonedFrameModel)
             uiView.scene.addAnchor(anchorEntity)
             

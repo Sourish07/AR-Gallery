@@ -29,10 +29,10 @@ class FrameModel: ObservableObject {
                 case .finished:
                     break
                 }
-                // Handle our error
-                print("DEBUG: Unable to load modelEntity for modelName: \(self.modelName)")
+                // Handle error
+                //print("DEBUG: Unable to load modelEntity for modelName: \(self.modelName)")
             }, receiveValue: { modelEntity in
-                // Get our modelEntity
+                // Get modelEntity
                 self.modelEntity = modelEntity
                 print("DEBUG: Successfully loaded modelEntity for modelName: \(self.modelName)")
             })
