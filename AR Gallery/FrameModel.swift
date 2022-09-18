@@ -37,4 +37,13 @@ class FrameModel: ObservableObject {
                 print("DEBUG: Successfully loaded modelEntity for modelName: \(self.modelName)")
             })
     }
+    
+    static func initFrames() -> [FrameModel] {
+        var frames: [FrameModel] = []
+        for i in 1...5 {
+            let filename = "frame\(i)"
+            frames.append(.init(modelName: filename))
+        }
+        return frames
+    }
 }

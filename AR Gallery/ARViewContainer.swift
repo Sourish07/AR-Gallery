@@ -16,7 +16,8 @@ struct ARViewContainer: UIViewRepresentable {
     @Binding var selectedImageForPlacement: UIImage?
     @Binding var confirmedImageForPlacement: UIImage?
     
-    var frameModel: FrameModel = FrameModel(modelName: "frame")
+    var frameModels: [FrameModel] = FrameModel.initFrames()//FrameModel(modelName: "frame")
+    @State var frameModelCounter: Counter = Counter(upperBound: 5)
     
     func makeUIView(context: Context) -> CustomARView {
 
@@ -34,29 +35,24 @@ struct ARViewContainer: UIViewRepresentable {
             
             let imgHeight = Float(imgTexture.resource.height)
             let imgWidth = Float(imgTexture.resource.width)
-            
-            
 
             var material = PhysicallyBasedMaterial()
             material.baseColor = .init(tint: .white, texture: imgTexture)
             material.roughness = .init(floatLiteral: 1)
             material.metallic = .init(floatLiteral: 1)
             
-            let clonedFrameModel: ModelEntity
-            if (imgHeight > imgWidth) {
-                print("Using portrait model")
-                clonedFrameModel = frameModel.modelEntity!.clone(recursive: true)
-            } else {
+            let frameIdx = self.frameModelCounter.getAndIncrement()
+            let clonedFrameModel = frameModels[frameIdx].modelEntity!.clone(recursive: true)
+            
+            // Picture is landscape
+            if (imgHeight < imgWidth) {
                 let rotationRadians = Float(90.0) * .pi / 180
-                print("Using landscape model")
                 material.textureCoordinateTransform = .init(rotation: rotationRadians)
-                clonedFrameModel = frameModel.modelEntity!.clone(recursive: true)
                 clonedFrameModel.transform.rotation *= Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
             }
             
             clonedFrameModel.model?.materials[1] = material
             
-            var scaleTransform: Transform
             let toMul = (4.0 / 3.0) / (max(imgHeight, imgWidth) / min(imgHeight, imgWidth))
             print("Scaling by \(toMul)")
             clonedFrameModel.transform.scale = Transform(scale: simd_float3(x: toMul, y: 1, z: 1)).scale
@@ -83,8 +79,6 @@ struct ARViewContainer: UIViewRepresentable {
 class CustomARView: ARView {
     var focusEntity: FocusEntity?
     
-    //let coachingOverlay = ARCoachingOverlayView()
-    
     required init(frame frameRect: CGRect) {
         super.init(frame: frameRect)
         
@@ -99,7 +93,7 @@ class CustomARView: ARView {
     
     func setupARView() {
         let config = ARWorldTrackingConfiguration()
-        config.planeDetection = [.vertical, .horizontal]
+        config.planeDetection = [.vertical]//[.vertical, .horizontal]
         config.environmentTexturing = .automatic
         
         if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
