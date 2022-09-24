@@ -16,18 +16,37 @@ struct ARViewContainer: UIViewRepresentable {
     @Binding var selectedImageForPlacement: UIImage?
     @Binding var confirmedImageForPlacement: UIImage?
     
+    @Binding var planeDetected: Bool?
+    
+    
     var frameModels: [FrameModel] = FrameModel.initFrames()
     @State var frameModelCounter: Counter = Counter(upperBound: 5)
+    
+    var sceneObserver: CancellableWrapper = CancellableWrapper()
     
     func makeUIView(context: Context) -> CustomARView {
 
         let arView = CustomARView(frame: .zero)
+        
+        sceneObserver.cancel = arView.scene.subscribe(to: SceneEvents.Update.self, { (event) in
+            self.updateScene(for: arView)
+        })
+        
         return arView
 
     }
+    
+    func updateScene(for arView: CustomARView) {
+        // Only display focusEntity when the user has selected a model for placement
+        arView.focusEntity?.isEnabled = self.selectedImageForPlacement != nil
+        
+        if (arView.focusEntity != nil) {
+            planeDetected = arView.focusEntity?.onPlane
+        }
+    }
 
     func updateUIView(_ uiView: CustomARView, context: Context) {
-        uiView.focusEntity?.isEnabled = self.selectedImageForPlacement != nil
+               
         if let uiImage = confirmedImageForPlacement {
             let cgImage = uiImage.cgImage
             let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
@@ -55,7 +74,6 @@ struct ARViewContainer: UIViewRepresentable {
             
             // Calculating scale factor to make frame model match picture's aspect ratio
             let toMul = (4.0 / 3.0) / (max(imgHeight, imgWidth) / min(imgHeight, imgWidth))
-            print("Scaling by \(toMul)")
             clonedFrameModel.transform.scale = Transform(scale: simd_float3(x: toMul, y: 1, z: 1)).scale
             
             // Ensuring the picture is orientated correctly

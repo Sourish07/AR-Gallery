@@ -16,11 +16,13 @@ struct NavBar: View {
     @Binding var selectedItems: [PhotosPickerItem]
     @Binding var selectedPhotosData: [Data]?
     
+    @Binding var planeDetected: Bool?
+    
     var body: some View {
         if (selectedImageForPlacement == nil) {
             NavBarPhotos(selectedItems: $selectedItems, selectedPhotosData: $selectedPhotosData, selectedImageForPlacement: $selectedImageForPlacement)
         } else {
-            NavBarConfirmImagePlacement(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement)
+            NavBarConfirmImagePlacement(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement, planeDetected: $planeDetected)
         }
     }
 }
@@ -33,28 +35,35 @@ struct NavBarPhotos: View { // The row of chosen images at the bottom of the use
     
     var body: some View {
         HStack {
-            PhotosPicker(
-                selection: $selectedItems,
-                matching: .images
-            ) {
-                NavBarIcon(image: Image(systemName: "photo.fill"))
-            }
-            .onChange(of: selectedItems) { newItems in
-                selectedPhotosData = []
-                for newItem in newItems {
-                    Task {
-                        if let data = try? await newItem.loadTransferable(type: Data.self) {
-                            selectedPhotosData!.append(data)
+            VStack(alignment: .leading){
+                if (selectedPhotosData == nil) {
+                    HStack{
+                        Text("     ")
+                        Image(systemName: "arrow.down")
+                        Text("Add some pictures from your camera roll to put on your wall!")
+                    }
+                }
+                PhotosPicker(
+                    selection: $selectedItems,
+                    matching: .images
+                ) {
+                    NavBarIcon(image: Image(systemName: "photo.fill"))
+                }
+                .onChange(of: selectedItems) { newItems in
+                    selectedPhotosData = []
+                    for newItem in newItems {
+                        Task {
+                            if let data = try? await newItem.loadTransferable(type: Data.self) {
+                                selectedPhotosData!.append(data)
+                            }
                         }
                     }
                 }
             }
+            
+            
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    if (selectedPhotosData == nil) {
-                        Image(systemName: "arrow.left")
-                        Text("Add some pictures from your camera roll to put on your wall!")
-                    }
                     ForEach(selectedPhotosData ?? [], id: \.self) { photoData in
                         if let image = UIImage(data: photoData) {
                             NavBarPictureButton(image: image, selectedImageForPlacement: $selectedImageForPlacement)
@@ -71,6 +80,8 @@ struct NavBarConfirmImagePlacement: View { // Buttons when confirming or cancell
     @Binding var selectedImageForPlacement: UIImage?
     @Binding var confirmedImageForPlacement: UIImage?
     
+    @Binding var planeDetected: Bool?
+    
     var body: some View {
         HStack {
             Spacer()
@@ -81,6 +92,9 @@ struct NavBarConfirmImagePlacement: View { // Buttons when confirming or cancell
             }
             Spacer()
             Button(action: {
+                if !(planeDetected ?? true) {
+                    return
+                }
                 confirmedImageForPlacement = selectedImageForPlacement
                 selectedImageForPlacement = nil
             }) {
