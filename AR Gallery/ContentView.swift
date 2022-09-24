@@ -6,38 +6,35 @@
 //
 
 import SwiftUI
+import PhotosUI
+
 import RealityKit
 
+
 struct ContentView : View {
+    @State private var selectedImageForPlacement: UIImage?
+    @State private var confirmedImageForPlacement: UIImage?
+    @State private var planeDetected: Bool? = false
+    
+    @State private var selectedItems: [PhotosPickerItem] = []
+    @State private var selectedPhotosData: [Data]?
+
     var body: some View {
-        ARViewContainer().edgesIgnoringSafeArea(.all)
+        ZStack(alignment: .bottom) {
+            ARViewContainer(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement, planeDetected: $planeDetected).edgesIgnoringSafeArea(.all)
+            NavBar(selectedImageForPlacement: $selectedImageForPlacement, confirmedImageForPlacement: $confirmedImageForPlacement, selectedItems: $selectedItems, selectedPhotosData: $selectedPhotosData, planeDetected: $planeDetected)
+        }
     }
 }
 
-struct ARViewContainer: UIViewRepresentable {
-    
-    func makeUIView(context: Context) -> ARView {
-        
-        let arView = ARView(frame: .zero)
-        
-        // Load the "Box" scene from the "Experience" Reality File
-        let boxAnchor = try! Experience.loadBox()
-        
-        // Add the box anchor to the scene
-        arView.scene.anchors.append(boxAnchor)
-        
-        return arView
-        
-    }
-    
-    func updateUIView(_ uiView: ARView, context: Context) {}
-    
-}
 
-#if DEBUG
-struct ContentView_Previews : PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-#endif
+
+
+
+//#if DEBUG
+//struct ContentView_Previews : PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
+//#endif
