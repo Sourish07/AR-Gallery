@@ -34,45 +34,61 @@ struct NavBarPhotos: View { // The row of chosen images at the bottom of the use
     @Binding var selectedImageForPlacement: UIImage?
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading){
-                if (selectedPhotosData == nil) {
-                    HStack{
-                        Text("     ")
-                        Image(systemName: "arrow.down")
-                        Text("Add some pictures from your camera roll to put on your wall!")
-                    }
+        if (selectedPhotosData == nil) {
+            VStack(alignment: .center){
+                ZStack {
+                    Image(systemName: "bubble.middle.bottom.fill")
+                        .resizable()
+                        .aspectRatio(1/1, contentMode: .fit)
+                        
+                    Text("Add some pictures from your camera roll to put on your wall!")
+                        .foregroundColor(.black)
+                        .padding(.init(top: 10, leading: 10, bottom: 50, trailing: 10))
                 }
-                PhotosPicker(
-                    selection: $selectedItems,
-                    matching: .images
-                ) {
-                    NavBarIcon(image: Image(systemName: "photo.fill"))
-                }
-                .onChange(of: selectedItems) { newItems in
-                    selectedPhotosData = []
-                    for newItem in newItems {
-                        Task {
-                            if let data = try? await newItem.loadTransferable(type: Data.self) {
-                                selectedPhotosData!.append(data)
+                .frame(width: 175)
+                
+                PhotoPickerIcon(selectedItems: $selectedItems, selectedPhotosData: $selectedPhotosData)
+                
+            }
+        } else {
+            HStack {
+                PhotoPickerIcon(selectedItems: $selectedItems, selectedPhotosData: $selectedPhotosData)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(selectedPhotosData ?? [], id: \.self) { photoData in
+                            if let image = UIImage(data: photoData) {
+                                NavBarPictureButton(image: image, selectedImageForPlacement: $selectedImageForPlacement)
                             }
                         }
                     }
                 }
             }
-            
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(selectedPhotosData ?? [], id: \.self) { photoData in
-                        if let image = UIImage(data: photoData) {
-                            NavBarPictureButton(image: image, selectedImageForPlacement: $selectedImageForPlacement)
-                        }
+            .padding(20)
+        }
+    }
+}
+
+struct PhotoPickerIcon: View {
+    @Binding var selectedItems: [PhotosPickerItem]
+    @Binding var selectedPhotosData: [Data]?
+    
+    var body: some View {
+        PhotosPicker(
+            selection: $selectedItems,
+            matching: .images
+        ) {
+            NavBarIcon(image: Image(systemName: "photo.fill"))
+        }
+        .onChange(of: selectedItems) { newItems in
+            selectedPhotosData = []
+            for newItem in newItems {
+                Task {
+                    if let data = try? await newItem.loadTransferable(type: Data.self) {
+                        selectedPhotosData!.append(data)
                     }
                 }
             }
         }
-        .padding(20)
     }
 }
 
