@@ -91,7 +91,7 @@ struct ARViewContainer: UIViewRepresentable {
             // 1. Setup frame model
             
             // 1a. Create texture from UIImage
-            let cgImage = uiImage.cgImage!
+            let cgImage = applyOrientation(uiImage: uiImage)!
             let textureResource = try! TextureResource.generate(from: cgImage, options: TextureResource.CreateOptions(semantic: .raw))
             let imgTexture = MaterialParameters.Texture.init(textureResource)
             
@@ -128,6 +128,51 @@ struct ARViewContainer: UIViewRepresentable {
                 pictureToPlace = nil
             }
         }
+    }
+    
+    func applyOrientation(uiImage: UIImage) -> CGImage? {
+        var angle = 0
+        if (uiImage.imageOrientation == .right) {
+            angle = 90
+        } else if (uiImage.imageOrientation == .down) {
+            angle = 180
+        } else if (uiImage.imageOrientation == .left) {
+            angle = 270
+        }
+        return rotateImageClockwise(image: uiImage.cgImage!, angle: angle)
+    }
+    
+    func rotateImageClockwise(image: CGImage, angle: Int) -> CGImage? {
+        // Function only supports 90, 180, and 270 degree rotations
+        if angle % 360 == 0 || angle % 90 != 0 {
+            return image
+        }
+        
+        // Calculate the new dimensions based on the rotation angle.
+        // For 90 and 270 degrees, swap width and height.
+        let isSwapDimensions = angle % 180 != 0
+        let newWidth = isSwapDimensions ? image.height : image.width
+        let newHeight = isSwapDimensions ? image.width : image.height
+        
+        // Create a new Core Graphics Context
+        let context = CGContext(data: nil, width: newWidth, height: newHeight, bitsPerComponent: image.bitsPerComponent, bytesPerRow: 0, space: image.colorSpace!, bitmapInfo: image.bitmapInfo.rawValue)
+        
+        // Move the origin to the middle of the context to prepare for rotation.
+        context?.translateBy(x: .init(newWidth / 2), y: .init(newHeight / 2))
+        // Apply the clockwise rotation. CGAffineTransform uses radians, so convert the angle.
+        context?.rotate(by: -CGFloat(angle) * .pi / 180)
+        // Move the origin back to the bottom-left corner, adjusting for the new dimensions.
+        if angle == 180 {
+            context?.translateBy(x: .init(-newWidth / 2), y: .init(-newHeight / 2))
+        } else { // Dimensions are switched if rotation was 90 or 270 degrees
+            context?.translateBy(x: .init(-newHeight / 2), y: .init(-newWidth / 2))
+        }
+        
+        // Draw the original image in the new context
+        context?.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+        
+        // Extract the rotated image
+        return context?.makeImage()
     }
 }
 
