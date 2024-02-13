@@ -28,6 +28,15 @@ struct ARViewContainer: UIViewRepresentable {
         let height = (model.model?.mesh.bounds.max.y)! - (model.model?.mesh.bounds.min.y)!
         model.transform.translation.y = height / 2 // Translating up so the model sits on plane
         
+        // Grabbing transform object and modifying rotation component so scale and translation are preserved
+        var transform = model.transform
+        transform.rotation = Transform(pitch: 0, yaw: .pi * 4.9, roll: 0).rotation // Yaw (rotation around vertical axis) cannot be multiple of 2 PI otherwise animation doesn't happen
+        
+        // Creating the animation object that will repeat forever
+        let animationDefinition = FromToByAnimation(to: transform, duration: 10.0, bindTarget: .transform).repeatingForever()
+        let animationResource = try! AnimationResource.generate(with: animationDefinition)
+        model.playAnimation(animationResource)
+        
         // 2. Create horizontal plane anchor for the content
         // Looking for a horizontal plane anywhere (e.g. ceiling, floor, table, seat, etc.)
         let anchor = AnchorEntity(.plane(.horizontal, classification: .any, minimumBounds: SIMD2<Float>(0.2, 0.2)))
