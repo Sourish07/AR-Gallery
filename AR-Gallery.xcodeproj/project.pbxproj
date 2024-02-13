@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6E0DBFE52B7B229300C1741D /* Earth.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E0DBFE42B7B229300C1741D /* Earth.usdz */; };
+		6E0DBFEC2B7B3E3A00C1741D /* tahoe.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6E0DBFEB2B7B3E3A00C1741D /* tahoe.jpg */; };
 		6E445E182B7B15B600F4A631 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E445E172B7B15B600F4A631 /* AppDelegate.swift */; };
 		6E445E1A2B7B15B600F4A631 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E445E192B7B15B600F4A631 /* ContentView.swift */; };
 		6E445E1C2B7B15B700F4A631 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E445E1B2B7B15B700F4A631 /* Assets.xcassets */; };
@@ -16,6 +17,7 @@
 
 /* Begin PBXFileReference section */
 		6E0DBFE42B7B229300C1741D /* Earth.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Earth.usdz; sourceTree = "<group>"; };
+		6E0DBFEB2B7B3E3A00C1741D /* tahoe.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tahoe.jpg; sourceTree = "<group>"; };
 		6E445E142B7B15B600F4A631 /* AR-Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-Gallery.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E445E172B7B15B600F4A631 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6E445E192B7B15B600F4A631 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 		6E445E162B7B15B600F4A631 /* AR-Gallery */ = {
 			isa = PBXGroup;
 			children = (
+				6E0DBFEB2B7B3E3A00C1741D /* tahoe.jpg */,
 				6E0DBFE42B7B229300C1741D /* Earth.usdz */,
 				6E445E172B7B15B600F4A631 /* AppDelegate.swift */,
 				6E445E192B7B15B600F4A631 /* ContentView.swift */,
@@ -129,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E445E1F2B7B15B700F4A631 /* Preview Assets.xcassets in Resources */,
+				6E0DBFEC2B7B3E3A00C1741D /* tahoe.jpg in Resources */,
 				6E0DBFE52B7B229300C1741D /* Earth.usdz in Resources */,
 				6E445E1C2B7B15B700F4A631 /* Assets.xcassets in Resources */,
 			);

@@ -18,31 +18,27 @@ struct ARViewContainer: UIViewRepresentable {
     
     func makeUIView(context: Context) -> ARView {
         
-        let arView = ARView(frame: .zero)
-
-        // 1. Import the earth model
-        // Make sure the usdz file is in the same directory as ContentView
-        let model = try! ModelEntity.loadModel(named: "Earth.usdz")
-
-        // Calculating the height of the model's mesh
-        let height = (model.model?.mesh.bounds.max.y)! - (model.model?.mesh.bounds.min.y)!
-        model.transform.translation.y = height / 2 // Translating up so the model sits on plane
+        let arView = ARView(frame: .zero)        
+        // 1. Create a plane model
+        // 1a. Create a plane mesh
+        let scale: Float = 0.5 // Setting it to float manually rather than double
+        let mesh = MeshResource.generatePlane(width: 16/9 * scale, depth: scale)
+        // 1b. Create texture
+        let cgImage = UIImage(named: "tahoe")?.cgImage
+        // .raw means we're using the texture unmodified, rather than using it to store color or normal data
+        let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
+        let imgTexture = MaterialParameters.Texture.init(textureResource)
+        // 1c. Create material
+        var material = SimpleMaterial()
+        material.color = .init(tint: .white, texture: imgTexture)
+        // 1d. Create a model entity
+        let model = ModelEntity(mesh: mesh, materials: [material])
         
-        // Grabbing transform object and modifying rotation component so scale and translation are preserved
-        var transform = model.transform
-        transform.rotation = Transform(pitch: 0, yaw: .pi * 4.9, roll: 0).rotation // Yaw (rotation around vertical axis) cannot be multiple of 2 PI otherwise animation doesn't happen
-        
-        // Creating the animation object that will repeat forever
-        let animationDefinition = FromToByAnimation(to: transform, duration: 10.0, bindTarget: .transform).repeatingForever()
-        let animationResource = try! AnimationResource.generate(with: animationDefinition)
-        model.playAnimation(animationResource)
-        
-        // 2. Create horizontal plane anchor for the content
-        // Looking for a horizontal plane anywhere (e.g. ceiling, floor, table, seat, etc.)
-        let anchor = AnchorEntity(.plane(.horizontal, classification: .any, minimumBounds: SIMD2<Float>(0.2, 0.2)))
+        // 2. Create vertical plane anchor for the content
+        let anchor = AnchorEntity(.plane(.vertical, classification: .any, minimumBounds: SIMD2<Float>(0.2, 0.2)))
         anchor.children.append(model) // Attaching the virtual model to the anchor point in the real world
         
-        // 3. Add the horizontal plane anchor to the scene
+        // 3. Add the plane anchor to the scene
         arView.scene.anchors.append(anchor)
 
         return arView
