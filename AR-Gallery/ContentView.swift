@@ -43,6 +43,22 @@ struct ARViewContainer: UIViewRepresentable {
         
         let arConfig = ARWorldTrackingConfiguration()
         arConfig.planeDetection = [.vertical]
+        
+        // Used to create a cube map of environment for reflections
+        arConfig.environmentTexturing = .automatic
+        
+        // Enables humans and real objects to occlude virtual object
+        arConfig.frameSemantics.insert(.personSegmentationWithDepth)
+        arView.environment.sceneUnderstanding.options.insert(.occlusion)
+        
+        // Shows real-time mesh that's created by ARKit
+        // arView.debugOptions.insert(.showSceneUnderstanding)
+        
+        // Uses LiDAR if available for increased AR stability
+        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+            arConfig.sceneReconstruction = .mesh
+        }
+        
         arView.session.run(arConfig)
         
         _ = FocusEntity(on: arView, style: .classic())
