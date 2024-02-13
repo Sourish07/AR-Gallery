@@ -20,15 +20,13 @@ struct ARViewContainer: UIViewRepresentable {
         
         let arView = ARView(frame: .zero)
 
-        // 1. Create a cube model
-        
-        // 1a. Create a cube mesh
-        let mesh = MeshResource.generateBox(size: 0.1, cornerRadius: 0.005)
-        // 1b. Create material
-        let material = SimpleMaterial(color: .gray, roughness: 0.15, isMetallic: true)
-        // 1c. Create a model entity with the mesh & material
-        let model = ModelEntity(mesh: mesh, materials: [material])
-        model.transform.translation.y = 0.05 // Translating up by 0.05 so cube sits flush on plane
+        // 1. Import the earth model
+        // Make sure the usdz file is in the same directory as ContentView
+        let model = try! ModelEntity.loadModel(named: "Earth.usdz")
+
+        // Calculating the height of the model's mesh
+        let height = (model.model?.mesh.bounds.max.y)! - (model.model?.mesh.bounds.min.y)!
+        model.transform.translation.y = height / 2 // Translating up so the model sits on plane
         
         // 2. Create horizontal plane anchor for the content
         // Looking for a horizontal plane anywhere (e.g. ceiling, floor, table, seat, etc.)
