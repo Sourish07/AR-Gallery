@@ -7,6 +7,8 @@
 
 import SwiftUI
 import RealityKit
+import ARKit
+import FocusEntity
 
 struct ContentView : View {
     // State variable is set by a button and used by the ARViewContainer
@@ -38,6 +40,13 @@ struct ARViewContainer: UIViewRepresentable {
     func makeUIView(context: Context) -> ARView {
         
         let arView = ARView(frame: .zero)
+        
+        let arConfig = ARWorldTrackingConfiguration()
+        arConfig.planeDetection = [.vertical]
+        arView.session.run(arConfig)
+        
+        _ = FocusEntity(on: arView, style: .classic())
+        
         return arView
         
     }
