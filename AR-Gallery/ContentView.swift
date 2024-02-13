@@ -9,33 +9,51 @@ import SwiftUI
 import RealityKit
 import ARKit
 import FocusEntity
+import PhotosUI
 
 struct ContentView : View {
-    // State variable is set by a button and used by the ARViewContainer
-    @State private var shouldPlace = false
+    @State private var showPhotoPicker: Bool = true
+    @State private var photosPickerItem: [PhotosPickerItem] = []
+    @State private var pictureToPlace: UIImage?
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            ARViewContainer(shouldPlace: $shouldPlace).edgesIgnoringSafeArea(.all)
-            Button(action: {
-                shouldPlace = true
-            }) {
-                Text("Add picture!")
-                    .fontWeight(.bold)
-                    .font(.title)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 10)
+            ARViewContainer(pictureToPlace: $pictureToPlace).edgesIgnoringSafeArea(.all)
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showPhotoPicker = !showPhotoPicker
+                    }) {
+                        Image(systemName: "photo.artframe").resizable().scaledToFit().frame(width: 50)
+                    }.padding().buttonStyle(.plain)
+                }
+                Spacer()
+                if (showPhotoPicker) {
+                    // Setting to continuous selection behavior to fix bug where user can't select same image multiple times in a row
+                    PhotosPicker("Photo Picker", selection: $photosPickerItem, selectionBehavior: .continuous, matching: .images)
+                        .photosPickerStyle(.inline)
+                        .ignoresSafeArea()
+                        .frame(height: 250)
+                        .photosPickerAccessoryVisibility(.hidden, edges: [.bottom, .leading])
+                        .photosPickerDisabledCapabilities(.selectionActions)
+                    .onChange(of: photosPickerItem) {
+                        Task {
+                            // The expected max length of the photosPickerItem array is 1 because we'll immediately place the image in the world and then clear the array
+                            if photosPickerItem.count > 0, let imageData = try? await photosPickerItem[0].loadTransferable(type: Data.self) {
+                                pictureToPlace = UIImage(data: imageData)
+                            }
+                            photosPickerItem.removeAll()
+                        }
+                    }
+                }
             }
-            .padding(.bottom, 50)
         }
     }
 }
 
 struct ARViewContainer: UIViewRepresentable {
-    @Binding var shouldPlace: Bool
+    @Binding var pictureToPlace: UIImage?
     
     func makeUIView(context: Context) -> ARView {
         
@@ -69,20 +87,25 @@ struct ARViewContainer: UIViewRepresentable {
     
     func updateUIView(_ uiView: ARView, context: Context) {
         
-        if shouldPlace {
+        if let uiImage = pictureToPlace {
             // 1. Create a plane model
-            // 1a. Create a plane mesh
-            let scale: Float = 0.25 // Setting it to float manually rather than double
-            let mesh = MeshResource.generatePlane(width: 16/9 * scale, depth: scale)
-            // 1b. Create texture
-            let cgImage = UIImage(named: "tahoe")?.cgImage
-            // .raw means we're using the texture unmodified, rather than using it to store color or normal data
-            let textureResource = try! TextureResource.generate(from: cgImage!, options: TextureResource.CreateOptions(semantic: .raw))
+            
+            // 1a. Create texture from UIImage
+            let cgImage = uiImage.cgImage!
+            let textureResource = try! TextureResource.generate(from: cgImage, options: TextureResource.CreateOptions(semantic: .raw))
             let imgTexture = MaterialParameters.Texture.init(textureResource)
-            // 1c. Create material
+            
+            let imgHeight = Float(imgTexture.resource.height)
+            let imgWidth = Float(imgTexture.resource.width)
+            
+            // Create material from texture
             var material = SimpleMaterial()
             material.color = .init(tint: .white, texture: imgTexture)
-            // 1d. Create a model entity
+            
+            // 1b. Create a plane mesh
+            let scale: Float = 0.25 // Setting it to float manually rather than double
+            // Scaling image to have height of 1 and then multiplying by scale factor
+            let mesh = MeshResource.generatePlane(width: imgWidth / imgHeight * scale, depth: imgHeight / imgHeight * scale)
             let model = ModelEntity(mesh: mesh, materials: [material])
             
             // 2. Create vertical plane anchor for the content
@@ -94,7 +117,7 @@ struct ARViewContainer: UIViewRepresentable {
             
             // Modify state during view update will cause undefined behavior, hence an asynchronous job
             Task {
-                shouldPlace = false
+                pictureToPlace = nil
             }
         }
     }
