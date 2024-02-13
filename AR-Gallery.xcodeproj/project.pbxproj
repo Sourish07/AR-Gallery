@@ -14,6 +14,11 @@
 		6E445E1A2B7B15B600F4A631 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E445E192B7B15B600F4A631 /* ContentView.swift */; };
 		6E445E1C2B7B15B700F4A631 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E445E1B2B7B15B700F4A631 /* Assets.xcassets */; };
 		6E445E1F2B7B15B700F4A631 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E445E1E2B7B15B700F4A631 /* Preview Assets.xcassets */; };
+		6ECA076D2B7BD6F50046BF63 /* frame5.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA07682B7BD6F50046BF63 /* frame5.usdz */; };
+		6ECA076E2B7BD6F50046BF63 /* frame4.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA07692B7BD6F50046BF63 /* frame4.usdz */; };
+		6ECA076F2B7BD6F50046BF63 /* frame3.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA076A2B7BD6F50046BF63 /* frame3.usdz */; };
+		6ECA07702B7BD6F50046BF63 /* frame2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA076B2B7BD6F50046BF63 /* frame2.usdz */; };
+		6ECA07712B7BD6F50046BF63 /* frame1.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA076C2B7BD6F50046BF63 /* frame1.usdz */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +29,11 @@
 		6E445E192B7B15B600F4A631 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6E445E1B2B7B15B700F4A631 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6E445E1E2B7B15B700F4A631 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		6ECA07682B7BD6F50046BF63 /* frame5.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame5.usdz; sourceTree = "<group>"; };
+		6ECA07692B7BD6F50046BF63 /* frame4.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame4.usdz; sourceTree = "<group>"; };
+		6ECA076A2B7BD6F50046BF63 /* frame3.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame3.usdz; sourceTree = "<group>"; };
+		6ECA076B2B7BD6F50046BF63 /* frame2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame2.usdz; sourceTree = "<group>"; };
+		6ECA076C2B7BD6F50046BF63 /* frame1.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame1.usdz; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +67,7 @@
 		6E445E162B7B15B600F4A631 /* AR-Gallery */ = {
 			isa = PBXGroup;
 			children = (
+				6ECA07672B7BD6F50046BF63 /* frames */,
 				6E0DBFEB2B7B3E3A00C1741D /* tahoe.jpg */,
 				6E0DBFE42B7B229300C1741D /* Earth.usdz */,
 				6E445E172B7B15B600F4A631 /* AppDelegate.swift */,
@@ -73,6 +84,18 @@
 				6E445E1E2B7B15B700F4A631 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		6ECA07672B7BD6F50046BF63 /* frames */ = {
+			isa = PBXGroup;
+			children = (
+				6ECA07682B7BD6F50046BF63 /* frame5.usdz */,
+				6ECA07692B7BD6F50046BF63 /* frame4.usdz */,
+				6ECA076A2B7BD6F50046BF63 /* frame3.usdz */,
+				6ECA076B2B7BD6F50046BF63 /* frame2.usdz */,
+				6ECA076C2B7BD6F50046BF63 /* frame1.usdz */,
+			);
+			path = frames;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,8 +163,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E445E1F2B7B15B700F4A631 /* Preview Assets.xcassets in Resources */,
+				6ECA07712B7BD6F50046BF63 /* frame1.usdz in Resources */,
 				6E0DBFEC2B7B3E3A00C1741D /* tahoe.jpg in Resources */,
 				6E0DBFE52B7B229300C1741D /* Earth.usdz in Resources */,
+				6ECA076D2B7BD6F50046BF63 /* frame5.usdz in Resources */,
+				6ECA07702B7BD6F50046BF63 /* frame2.usdz in Resources */,
+				6ECA076F2B7BD6F50046BF63 /* frame3.usdz in Resources */,
+				6ECA076E2B7BD6F50046BF63 /* frame4.usdz in Resources */,
 				6E445E1C2B7B15B700F4A631 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

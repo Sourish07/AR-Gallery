@@ -88,7 +88,7 @@ struct ARViewContainer: UIViewRepresentable {
     func updateUIView(_ uiView: ARView, context: Context) {
         
         if let uiImage = pictureToPlace {
-            // 1. Create a plane model
+            // 1. Setup frame model
             
             // 1a. Create texture from UIImage
             let cgImage = uiImage.cgImage!
@@ -98,19 +98,27 @@ struct ARViewContainer: UIViewRepresentable {
             let imgHeight = Float(imgTexture.resource.height)
             let imgWidth = Float(imgTexture.resource.width)
             
-            // Create material from texture
-            var material = SimpleMaterial()
-            material.color = .init(tint: .white, texture: imgTexture)
+            // 1b. Create material from texture
+            var material = PhysicallyBasedMaterial()
+            material.baseColor = .init(tint: .white, texture: imgTexture)
             
-            // 1b. Create a plane mesh
-            let scale: Float = 0.25 // Setting it to float manually rather than double
-            // Scaling image to have height of 1 and then multiplying by scale factor
-            let mesh = MeshResource.generatePlane(width: imgWidth / imgHeight * scale, depth: imgHeight / imgHeight * scale)
-            let model = ModelEntity(mesh: mesh, materials: [material])
+            // 1c. Load in frame model
+            let frameIdx = Int.random(in: 1..<5+1) // Interval is half open
+            let frameModel = try! ModelEntity.loadModel(named: "frame\(frameIdx).usdz")
+            
+            // 1d. Rotate the frame model if image is in landscape
+            if (imgHeight < imgWidth) {
+                // Rotating the UV coordinates of the texture
+                material.textureCoordinateTransform = .init(rotation: .pi / 2)
+                frameModel.transform.rotation *= Transform(pitch: 0, yaw: -.pi/2, roll: 0).rotation
+            }
+            // 1e. Update mesh material to user's chosen picture
+            // 1 is the index position for the material of the image plane inside the frame of these specific models
+            frameModel.model?.materials[1] = material
             
             // 2. Create vertical plane anchor for the content
             let anchor = AnchorEntity(.plane(.vertical, classification: .any, minimumBounds: SIMD2<Float>(0.2, 0.2)))
-            anchor.children.append(model) // Attaching the virtual model to the anchor point in the real world
+            anchor.children.append(frameModel) // Attaching the virtual model to the anchor point in the real world
             
             // 3. Add the plane anchor to the scene
             uiView.scene.anchors.append(anchor)
