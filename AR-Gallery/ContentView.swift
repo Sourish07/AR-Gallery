@@ -8,15 +8,17 @@
 import SwiftUI
 import RealityKit
 import PhotosUI
+import Combine
 
 struct ContentView : View {
     @State private var showPhotoPicker: Bool = true
+    @State private var planeDetected: Bool = false
     @State private var photosPickerItem: [PhotosPickerItem] = []
     @State private var pictureToPlace: UIImage?
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            ARViewContainer(pictureToPlace: $pictureToPlace).edgesIgnoringSafeArea(.all)
+            ARViewContainer(pictureToPlace: $pictureToPlace, showPhotoPicker: $showPhotoPicker, planeDetected: $planeDetected).edgesIgnoringSafeArea(.all)
             VStack {
                 HStack {
                     Spacer()
@@ -38,7 +40,8 @@ struct ContentView : View {
                     .onChange(of: photosPickerItem) {
                         Task {
                             // The expected max length of the photosPickerItem array is 1 because we'll immediately place the image in the world and then clear the array
-                            if photosPickerItem.count > 0, let imageData = try? await photosPickerItem[0].loadTransferable(type: Data.self) {
+                            // Also, make sure plane has been detected before loading image
+                            if photosPickerItem.count > 0, planeDetected, let imageData = try? await photosPickerItem[0].loadTransferable(type: Data.self) {
                                 pictureToPlace = UIImage(data: imageData)
                             }
                             photosPickerItem.removeAll()
@@ -52,12 +55,32 @@ struct ContentView : View {
 
 struct ARViewContainer: UIViewRepresentable {
     @Binding var pictureToPlace: UIImage?
+    @Binding var showPhotoPicker: Bool
+    @Binding var planeDetected: Bool
+    
+    // Necessary because makeUIView cannot edit instance variables
+    var sceneObserver: CancellableWrapper = CancellableWrapper()
     
     func makeUIView(context: Context) -> MyARView {
         
         let arView = MyARView(frame: .zero)
+        
+        sceneObserver.cancel = arView.scene.subscribe(to: SceneEvents.Update.self, { (event) in
+            self.updateScene(for: arView)
+        })
+        
         return arView
         
+    }
+    
+    func updateScene(for arView: MyARView) {
+        // Only display focusEntity when the PhotosPicker is visible
+        arView.focusEntity?.isEnabled = showPhotoPicker
+        
+        // Check if FocusEntity has detected a plane and update the state variable
+        if (arView.focusEntity != nil) {
+            planeDetected = arView.focusEntity!.onPlane
+        }
     }
     
     func updateUIView(_ uiView: MyARView, context: Context) {
@@ -160,6 +183,10 @@ struct ARViewContainer: UIViewRepresentable {
         // Extract the rotated image
         return context?.makeImage()
     }
+}
+
+class CancellableWrapper {
+    var cancel: Cancellable?
 }
 
 #Preview {
