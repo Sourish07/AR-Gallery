@@ -116,6 +116,13 @@ struct ARViewContainer: UIViewRepresentable {
             // 1 is the index position for the material of the image plane inside the frame of these specific models
             frameModel.model?.materials[1] = material
             
+            // 1f. Scale the short side of the frame model to preserve image's original aspect ratio
+            // Currently, all images will be stretched/squished to fit the 4:3 ratio of the picture frame model
+            let imageAspectRatio = max(imgHeight, imgWidth) / min(imgHeight, imgWidth) // This is the target aspect ratio
+            let frameAspectRatio = Float(4.0 / 3.0) // This is the current aspect ratio
+            let scaleFactor = frameAspectRatio / imageAspectRatio // Calculating how much we need to stretch or squish by
+            frameModel.transform.scale *= Transform(scale: simd_float3(x: scaleFactor, y: 1, z: 1)).scale
+            
             // 2. Create vertical plane anchor for the content
             let anchor = AnchorEntity(.plane(.vertical, classification: .any, minimumBounds: SIMD2<Float>(0.2, 0.2)))
             anchor.children.append(frameModel) // Attaching the virtual model to the anchor point in the real world
