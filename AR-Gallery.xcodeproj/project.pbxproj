@@ -20,6 +20,8 @@
 		6ECA076F2B7BD6F50046BF63 /* frame3.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA076A2B7BD6F50046BF63 /* frame3.usdz */; };
 		6ECA07702B7BD6F50046BF63 /* frame2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA076B2B7BD6F50046BF63 /* frame2.usdz */; };
 		6ECA07712B7BD6F50046BF63 /* frame1.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6ECA076C2B7BD6F50046BF63 /* frame1.usdz */; };
+		6EE410E62B7C780700AE3217 /* ARViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE410E52B7C780700AE3217 /* ARViewContainer.swift */; };
+		6EE410EA2B7C78DF00AE3217 /* PhotosPickerContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE410E92B7C78DF00AE3217 /* PhotosPickerContainer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		6ECA076A2B7BD6F50046BF63 /* frame3.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame3.usdz; sourceTree = "<group>"; };
 		6ECA076B2B7BD6F50046BF63 /* frame2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame2.usdz; sourceTree = "<group>"; };
 		6ECA076C2B7BD6F50046BF63 /* frame1.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = frame1.usdz; sourceTree = "<group>"; };
+		6EE410E52B7C780700AE3217 /* ARViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewContainer.swift; sourceTree = "<group>"; };
+		6EE410E92B7C78DF00AE3217 /* PhotosPickerContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosPickerContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,8 @@
 				6E445E1B2B7B15B700F4A631 /* Assets.xcassets */,
 				6E445E1D2B7B15B700F4A631 /* Preview Content */,
 				6E0174DE2B7C637200E9E02F /* MyARView.swift */,
+				6EE410E52B7C780700AE3217 /* ARViewContainer.swift */,
+				6EE410E92B7C78DF00AE3217 /* PhotosPickerContainer.swift */,
 			);
 			path = "AR-Gallery";
 			sourceTree = "<group>";
@@ -184,7 +190,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6EE410EA2B7C78DF00AE3217 /* PhotosPickerContainer.swift in Sources */,
 				6E445E1A2B7B15B600F4A631 /* ContentView.swift in Sources */,
+				6EE410E62B7C780700AE3217 /* ARViewContainer.swift in Sources */,
 				6E0174DF2B7C637200E9E02F /* MyARView.swift in Sources */,
 				6E445E182B7B15B600F4A631 /* AppDelegate.swift in Sources */,
 			);
