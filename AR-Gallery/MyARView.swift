@@ -36,6 +36,23 @@ class MyARView: ARView {
             arConfig.sceneReconstruction = .mesh
         }
         self.session.run(arConfig)
+
+        // Installing double tap gesture to delete model
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.deleteImage(_:)))
+        tapGesture.numberOfTapsRequired = 2
+        self.addGestureRecognizer(tapGesture)
+    }
+
+    @objc func deleteImage(_ sender: UITapGestureRecognizer? = nil) {
+        guard let touchInView = sender?.location(in: self) else {
+            return
+        }
+
+        guard let frameModel = self.entity(at: touchInView) as? ModelEntity else {
+            return
+        }
+
+        self.scene.removeAnchor(frameModel.anchor!)
     }
     
     // Function must be provided by subclass of ARView

@@ -97,6 +97,10 @@ struct ARViewContainer: UIViewRepresentable {
             let frameAspectRatio = Float(4.0 / 3.0) // This is the current aspect ratio
             let scaleFactor = frameAspectRatio / imageAspectRatio // Calculating how much we need to stretch or squish by
             frameModel.transform.scale *= Transform(scale: simd_float3(x: scaleFactor, y: 1, z: 1)).scale
+
+            // 1g. Enable translation and rotation gestures
+            frameModel.generateCollisionShapes(recursive: true)
+            uiView.installGestures([.all], for: frameModel)
             
             // 2. Create vertical plane anchor for the content
             let anchor = AnchorEntity(.plane(.vertical, classification: .any, minimumBounds: SIMD2<Float>(0.2, 0.2)))
