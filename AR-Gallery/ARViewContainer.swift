@@ -15,6 +15,8 @@ struct ARViewContainer: UIViewRepresentable {
     @Binding var pictureToPlace: UIImage?
     @Binding var showPhotoPicker: Bool
     @Binding var planeDetected: Bool
+
+    var frameModels: FrameModelPicker = FrameModelPicker()
     
     // Necessary because makeUIView cannot edit instance variables
     var sceneObserver: CancellableWrapper = CancellableWrapper()
@@ -59,8 +61,7 @@ struct ARViewContainer: UIViewRepresentable {
             material.baseColor = .init(tint: .white, texture: imgTexture)
             
             // 1c. Load in frame model
-            let frameIdx = Int.random(in: 1..<5+1) // Interval is half open
-            let frameModel = try! ModelEntity.loadModel(named: "frame\(frameIdx).usdz")
+            let frameModel = frameModels.getRandomFrameModel()!
             
             // 1d. Rotate the frame model if image is in landscape
             if (imgHeight < imgWidth) {

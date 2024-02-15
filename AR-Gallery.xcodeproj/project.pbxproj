@@ -10,6 +10,7 @@
 		6E0174DF2B7C637200E9E02F /* MyARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E0174DE2B7C637200E9E02F /* MyARView.swift */; };
 		6E0DBFE52B7B229300C1741D /* Earth.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E0DBFE42B7B229300C1741D /* Earth.usdz */; };
 		6E0DBFEC2B7B3E3A00C1741D /* tahoe.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6E0DBFEB2B7B3E3A00C1741D /* tahoe.jpg */; };
+		6E14E9972B7DA71300882A00 /* FrameModelPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E14E9962B7DA71300882A00 /* FrameModelPicker.swift */; };
 		6E3C4E192B7BB8BD0085BF06 /* FocusEntity in Frameworks */ = {isa = PBXBuildFile; productRef = 6E3C4E182B7BB8BD0085BF06 /* FocusEntity */; };
 		6E445E182B7B15B600F4A631 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E445E172B7B15B600F4A631 /* AppDelegate.swift */; };
 		6E445E1A2B7B15B600F4A631 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E445E192B7B15B600F4A631 /* ContentView.swift */; };
@@ -28,6 +29,7 @@
 		6E0174DE2B7C637200E9E02F /* MyARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyARView.swift; sourceTree = "<group>"; };
 		6E0DBFE42B7B229300C1741D /* Earth.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Earth.usdz; sourceTree = "<group>"; };
 		6E0DBFEB2B7B3E3A00C1741D /* tahoe.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tahoe.jpg; sourceTree = "<group>"; };
+		6E14E9962B7DA71300882A00 /* FrameModelPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameModelPicker.swift; sourceTree = "<group>"; };
 		6E445E142B7B15B600F4A631 /* AR-Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-Gallery.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E445E172B7B15B600F4A631 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6E445E192B7B15B600F4A631 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 				6E0174DE2B7C637200E9E02F /* MyARView.swift */,
 				6EE410E52B7C780700AE3217 /* ARViewContainer.swift */,
 				6EE410E92B7C78DF00AE3217 /* PhotosPickerContainer.swift */,
+				6E14E9962B7DA71300882A00 /* FrameModelPicker.swift */,
 			);
 			path = "AR-Gallery";
 			sourceTree = "<group>";
@@ -195,6 +198,7 @@
 				6EE410E62B7C780700AE3217 /* ARViewContainer.swift in Sources */,
 				6E0174DF2B7C637200E9E02F /* MyARView.swift in Sources */,
 				6E445E182B7B15B600F4A631 /* AppDelegate.swift in Sources */,
+				6E14E9972B7DA71300882A00 /* FrameModelPicker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
